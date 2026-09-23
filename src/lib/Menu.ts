@@ -922,7 +922,13 @@ class FranzMenu implements StoresProps {
         },
         {
           label: intl.formatMessage(menuItems.checkForUpdates),
-          visible: !locked,
+          // [FORK] Removed from the menu: the upstream release feed is disabled in
+          // this build (see src/electron/ipc-api/autoUpdate.ts), so this item could
+          // only no-op or offer the stock binary over the fork. Both flags are set
+          // because `visible:false` alone does not reliably suppress an accelerator
+          // if upstream ever adds one.
+          visible: false,
+          enabled: false,
           click: () => {
             this.actions.app.checkForUpdates();
           },

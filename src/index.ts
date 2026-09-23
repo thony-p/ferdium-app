@@ -108,6 +108,25 @@ const retrieveSettingValue = (key: string, defaultValue: boolean | string) =>
   ifUndefined<boolean | string>(settings.get(key), defaultValue);
 
 const normalizeAppSettings = (): void => {
+  // [FORK] Force the upstream update feed off, unconditionally and at startup.
+  // A DEFAULT_APP_SETTINGS change alone is not enough: existing profiles keep
+  // whatever settings.json already holds, and the Settings UI can flip it back.
+  // This fork's binary must never be replaced by a stock ferdium/ferdium-app
+  // release, so the setting is normalized to false on every launch and the
+  // main-process kill switch in electron/ipc-api/autoUpdate.ts backs it up.
+  if (settings.get('automaticUpdates') !== false) {
+    debug('Normalizing app settings for disabled upstream updates');
+    settings.set({ automaticUpdates: false });
+  }
+
+  // [FORK] Sentry off for migrated profiles too. DEFAULT_APP_SETTINGS only applies
+  // when the key is absent, so a profile that already ran stock Ferdium can still
+  // carry sentry: true on disk.
+  if (settings.get('sentry') !== false) {
+    debug('Normalizing app settings for disabled Sentry');
+    settings.set({ sentry: false });
+  }
+
   if (isMac || settings.get('enableSystemTray') !== false) {
     return;
   }

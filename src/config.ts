@@ -620,7 +620,10 @@ export const DEFAULT_APP_SETTINGS = {
   wakeUpHibernationStrategy: '0', // seconds -- 0 means do the same as hibernationStrategy
   wakeUpHibernationSplay: true,
   inactivityLock: 0,
-  automaticUpdates: true,
+  // [FORK] Upstream updates off. Enforcement is not this default — see the
+  // normalizeAppSettings() force-off in src/index.ts and the hard kill switch in
+  // src/electron/ipc-api/autoUpdate.ts. Editing this value alone changes nothing.
+  automaticUpdates: false,
   universalDarkMode: true,
   userAgentPref: '',
   downloadFolderPath: '',
@@ -630,7 +633,9 @@ export const DEFAULT_APP_SETTINGS = {
   serviceRibbonWidth: 68,
   sidebarServicesLocation: SIDEBAR_SERVICES_LOCATION_TOPLEFT,
   iconSize: iconSizeBias,
-  sentry: true,
+  // [FORK] Off. Only a default for fresh profiles; src/index.ts also normalizes
+  // this key every launch for profiles migrated from stock Ferdium.
+  sentry: false,
   navigationBarBehaviour: 'custom',
   webRTCIPHandlingPolicy: disableWebRTCIPHandlingPolicy,
   searchEngine: SEARCH_ENGINE_STARTPAGE,

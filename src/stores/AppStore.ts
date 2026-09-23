@@ -585,7 +585,11 @@ export default class AppStore extends TypedStore {
       });
     }
 
-    if (this.isOnline && this.stores.settings.app.automaticUpdates) {
+    // [FORK] Recipe updates are deliberately decoupled from app updates. Upstream
+    // gates both on `automaticUpdates`, which in this fork is off so the upstream
+    // binary can never be installed over it. Recipe updates only refresh service
+    // definitions (and are what fixes a broken WhatsApp/Slack recipe), so keep them.
+    if (this.isOnline) {
       this.actions.recipe.update();
     }
   }

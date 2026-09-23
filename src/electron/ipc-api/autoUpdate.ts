@@ -6,7 +6,22 @@ import { isSnap } from '../../environment';
 
 const debug = require('../../preload-safe-debug')('Ferdium:ipcApi:autoUpdate');
 
+// [FORK] Hard kill switch for the upstream release feed.
+// Typed as boolean (not a literal `false`) so the guarded body below stays
+// statically reachable — tsconfig sets allowUnreachableCode:false, and a literal
+// would make TS7027 fire on everything after the early return.
+const FORK_UPSTREAM_UPDATES_ENABLED: boolean = false;
+
 export default (params: { mainWindow: BrowserWindow; settings: any }) => {
+  // [FORK] Bail out before any handler is registered or any check is issued, and
+  // disarm the singleton first so a stray checkForUpdates() from anywhere else
+  // still cannot download or install the stock release on quit.
+  if (!FORK_UPSTREAM_UPDATES_ENABLED) {
+    autoUpdater.autoInstallOnAppQuit = false;
+    autoUpdater.autoDownload = false;
+    return;
+  }
+
   const enableUpdate = Boolean(params.settings.app.get('automaticUpdates'));
 
   // The following line is a workaround to force the development update. Should only be used for development purposes.

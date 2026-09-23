@@ -1332,7 +1332,17 @@ class EditSettingsForm extends Component<IProps, IState> {
                   {intl.formatMessage(messages.sectionUpdates)}
                 </H2>
 
-                <Toggle {...form.$('automaticUpdates').bind()} />
+                <Toggle {...form.$('automaticUpdates').bind()} disabled />
+                <p className="settings__help">
+                  {/* [FORK] The upstream release feed is disabled in this build so a
+                      stock ferdium/ferdium-app release can never replace the fork.
+                      Current version and source are shown in About. */}
+                  Automatic updates are disabled in this build.
+                </p>
+
+                {/* [FORK] Intentionally unreachable: automaticUpdates is forced false
+                    in the main process every launch, so these update controls can
+                    never render. Kept in place to keep upstream merges clean. */}
                 {automaticUpdates && !isWinPortable && (
                   <>
                     <>
